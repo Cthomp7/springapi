@@ -1,17 +1,23 @@
-name: Build and Push to JFrog Artifactory
+name: Build Docker Image from JFrog JAR
 
 on:
   push:
     branches:
-      - main  # Change to your default branch
+      - main
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Download JAR from JFrog
+        run: |
+          curl -u "${{ secrets.JFROG_USERNAME }}:${{ secrets.JFROG_API_TOKEN }}" \
+            -o app.jar \
+            "https://trialpkvroj.jfrog.io/artifactory/maven-local-springapi/com/jts/crudExample/0.0.1-SNAPSHOT/crudExample-0.0.1-SNAPSHOT.jar"
 
       - name: Log in to JFrog Docker Registry
         run: |
@@ -20,8 +26,8 @@ jobs:
       - name: Build Docker image
         run: docker build -t springapi:latest .
 
-      - name: Tag Docker image for JFrog
+      - name: Tag Docker image
         run: docker tag springapi:latest trialpkvroj.jfrog.io/docker-local-springapi/springapi:latest
 
-      - name: Push Docker image to JFrog
+      - name: Push Docker image
         run: docker push trialpkvroj.jfrog.io/docker-local-springapi/springapi:latest
