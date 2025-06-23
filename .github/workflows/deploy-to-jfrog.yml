@@ -1,0 +1,27 @@
+name: Build and Push to JFrog Artifactory
+
+on:
+  push:
+    branches:
+      - main  # Change to your default branch
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to JFrog Docker Registry
+        run: |
+          echo "${{ secrets.rjYNMsMbWJP7idE03LH0U4BDDlmK201 }}" | docker login trialpkvroj.jfrog.io -u "${{ secrets.JFROG_CHLOE }}" --password-stdin
+
+      - name: Build Docker image
+        run: docker build -t springapi:latest .
+
+      - name: Tag Docker image for JFrog
+        run: docker tag springapi:latest trialpkvroj.jfrog.io/docker-local-springapi/springapi:latest
+
+      - name: Push Docker image to JFrog
+        run: docker push trialpkvroj.jfrog.io/docker-local-springapi/springapi:latest
