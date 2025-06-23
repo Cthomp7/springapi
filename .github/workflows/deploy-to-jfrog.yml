@@ -13,21 +13,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Download JAR from JFrog
+      - name: Download JAR from JFrog with authentication
         run: |
-          curl -u "${{ secrets.JFROG_USERNAME }}:${{ secrets.JFROG_API_TOKEN }}" \
+          curl -u "${{ secrets.JFROG_USERNAME }}:${{ secrets.JFROG_PASSWORD }}" \
             -o app.jar \
             "https://trialpkvroj.jfrog.io/artifactory/maven-local-springapi/com/jts/crudExample/0.0.1-SNAPSHOT/crudExample-0.0.1-SNAPSHOT.jar"
-
-      - name: Log in to JFrog Docker Registry
-        run: |
-          echo "${{ secrets.JFROG_API_TOKEN }}" | docker login trialpkvroj.jfrog.io -u "${{ secrets.JFROG_USERNAME }}" --password-stdin
 
       - name: Build Docker image
         run: docker build -t springapi:latest .
 
+      - name: Log in to JFrog Docker registry
+        run: echo "${{ secrets.JFROG_PASSWORD }}" | docker login trialpkvroj.jfrog.io -u "${{ secrets.JFROG_USERNAME }}" --password-stdin
+
       - name: Tag Docker image
         run: docker tag springapi:latest trialpkvroj.jfrog.io/docker-local-springapi/springapi:latest
 
-      - name: Push Docker image
+      - name: Push Docker image to JFrog
         run: docker push trialpkvroj.jfrog.io/docker-local-springapi/springapi:latest
