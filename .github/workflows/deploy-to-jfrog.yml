@@ -15,7 +15,7 @@ jobs:
 
       - name: Log in to JFrog Docker Registry
         run: |
-          echo "${{ secrets.JFROG_API_TOKEN }}" | docker login trialpkvroj.jfrog.io -u "${{ secrets.chloe.thompson@ocellus.com }}" --password-stdin
+          echo "${{ secrets.JFROG_API_TOKEN }}" | docker login trialpkvroj.jfrog.io -u "${{ secrets.JFROG_USERNAME }}" --password-stdin
 
       - name: Build Docker image
         run: docker build -t springapi:latest .
